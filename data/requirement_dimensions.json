@@ -1,0 +1,100 @@
+{
+  "critical_dimensions": {
+    "role_title": {
+      "description": "Primary hiring role or target position",
+      "examples": [
+        "Frontend Developer",
+        "Backend Engineer",
+        "Data Scientist"
+      ]
+    },
+
+    "technical_skills": {
+      "description": "Core technical competencies required for the role",
+      "examples": [
+        "Java",
+        "Python",
+        "React",
+        "SQL"
+      ]
+    },
+
+    "experience_level": {
+      "description": "Candidate seniority or experience level",
+      "examples": [
+        "Entry-Level",
+        "Mid-Professional",
+        "Senior",
+        "Leadership"
+      ]
+    }
+  },
+
+  "important_dimensions": {
+    "assessment_type": {
+      "description": "Preferred assessment style",
+      "examples": [
+        "Coding",
+        "Simulation",
+        "Knowledge Test",
+        "Behavioral",
+        "Aptitude"
+      ]
+    },
+
+    "specialization": {
+      "description": "Specific engineering or business specialization",
+      "examples": [
+        "Frontend Development",
+        "Distributed Systems",
+        "Cloud Infrastructure"
+      ]
+    },
+
+    "problem_solving": {
+      "description": "Need for analytical or reasoning evaluation",
+      "examples": [
+        "Analytical Thinking",
+        "Debugging",
+        "System Design"
+      ]
+    },
+
+    "behavioral_evaluation": {
+      "description": "Need for communication, teamwork, or leadership evaluation",
+      "examples": [
+        "Communication",
+        "Leadership",
+        "Collaboration"
+      ]
+    }
+  },
+
+  "optional_dimensions": {
+    "delivery_constraints": {
+      "description": "Assessment delivery preferences",
+      "examples": [
+        "Adaptive",
+        "Remote"
+      ]
+    },
+
+    "duration_constraints": {
+      "description": "Preferred assessment duration",
+      "examples": [
+        "15 minutes",
+        "30 minutes",
+        "60 minutes"
+      ]
+    },
+
+    "language_requirements": {
+      "description": "Preferred assessment language",
+      "examples": [
+        "English (USA)",
+        "French",
+        "Spanish"
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "communication evaluation": "communication",
+  "communication skills": "communication",
+  "verbal communication": "communication",
+
+  "teamwork": "collaboration",
+  "team collaboration": "collaboration",
+
+  "backend architecture": "system design",
+  "application architecture": "system design",
+
+  "distributed backend systems": "distributed systems",
+
+  "api engineering": "api development",
+
+  "cloud-native apps": "cloud-native applications",
+
+  "debugging skills": "debugging",
+
+  "problem solving skills": "problem solving"
+}

@@ -1,0 +1,70 @@
+{
+  "backend engineer": {
+
+    "domains": [
+      "backend development",
+      "api development",
+      "web services"
+    ],
+
+    "engineering_focus": [
+      "distributed systems",
+      "application development"
+    ],
+
+    "competencies": [
+      "system design",
+      "backend architecture"
+    ]
+  },
+
+  "frontend engineer": {
+
+    "domains": [
+      "frontend development",
+      "ui development"
+    ],
+
+    "engineering_focus": [
+      "responsive web applications"
+    ],
+
+    "competencies": [
+      "ui engineering"
+    ]
+  },
+
+  "data scientist": {
+
+    "domains": [
+      "machine learning",
+      "data science"
+    ],
+
+    "engineering_focus": [
+      "data pipelines",
+      "model development"
+    ],
+
+    "competencies": [
+      "statistical analysis",
+      "feature engineering"
+    ]
+  },
+
+  "android developer": {
+
+    "domains": [
+      "android development",
+      "mobile applications"
+    ],
+
+    "engineering_focus": [
+      "mobile engineering"
+    ],
+
+    "competencies": [
+      "mobile app development"
+    ]
+  }
+}
