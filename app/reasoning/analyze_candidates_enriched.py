@@ -43,9 +43,11 @@ class CandidateAmbiguityAnalyzer:
             ],
         }
         system = (
-            "Compare top SHL catalogue candidates and identify ambiguity. Return JSON "
-            "with ambiguous, differentiators, ambiguity_terms, question. Ask one focused "
-            "domain- or specialization-level clarification question. Do not invent facts."
+            "Compare top SHL catalogue candidates and identify the recruiter-facing "
+            "ambiguity. Return JSON with ambiguous, differentiators, ambiguity_terms, "
+            "question. Ask one focused domain-, seniority-, purpose-, or specialization-"
+            "level clarification question. Sound consultative. Do not mention retrieval, "
+            "vectors, clusters, scores, candidates, or search mechanics. Do not invent facts."
         )
         parsed = self.llm.json_call(system, payload, fallback.__dict__)
         return AmbiguityReport(
@@ -61,8 +63,7 @@ class CandidateAmbiguityAnalyzer:
             return AmbiguityReport(False, [], [], "")
         top_terms = [_important_terms(item.entry.name + " " + item.entry.description) for item in kept[:3]]
         differentiators = sorted(set().union(*top_terms))[:8]
-        names = [item.entry.name for item in kept[:2]]
-        question = f"Are you closer to {names[0]} or {names[1]}?"
+        question = _natural_question(differentiators)
         return AmbiguityReport(True, differentiators, differentiators[:4], question)
 
 
@@ -78,3 +79,26 @@ def _list(value: object) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item).strip() for item in value if str(item).strip()]
+
+
+def _natural_question(terms: list[str]) -> str:
+    joined = " ".join(terms)
+    if any(term in joined for term in ("leadership", "behavior", "personality")):
+        return (
+            "Would success in this role depend more on leadership behaviour, "
+            "individual technical depth, or broader stakeholder influence?"
+        )
+    if any(term in joined for term in ("development", "application", "programming", "framework")):
+        return (
+            "Would the candidate mainly build application features, design the "
+            "architecture, or maintain existing systems?"
+        )
+    if any(term in joined for term in ("data", "modeling", "analytics")):
+        return (
+            "Is the work closer to analysis and reporting, predictive modeling, "
+            "or implementing data systems in production?"
+        )
+    return (
+        "Which capability matters most for this assessment: technical specialization, "
+        "problem solving, people leadership, or communication with stakeholders?"
+    )

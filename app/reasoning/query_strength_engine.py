@@ -69,5 +69,12 @@ STOP_WORDS = {
     "multiple",
     "choice",
     "multi",
+    "multi-choice",
     "designed",
+    "topics",
+    "topic",
+    "environment",
+    "approximate",
+    "completion",
+    "minutes",
 }

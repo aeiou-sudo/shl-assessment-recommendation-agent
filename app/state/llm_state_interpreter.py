@@ -31,6 +31,16 @@ HIRING_TERMS = {
     "personality",
     "cognitive",
     "language",
+    "leadership",
+    "leader",
+    "senior",
+    "executive",
+    "director",
+    "selection",
+    "promotion",
+    "development",
+    "position",
+    "positions",
 }
 
 NEGATIVE_PATTERNS = [
@@ -143,13 +153,53 @@ def _extract_positive_phrases(query: str, negatives: list[str]) -> list[str]:
     text = query
     for negative in negatives:
         text = re.sub(re.escape(negative), " ", text, flags=re.I)
-    stop = HIRING_TERMS | {
+    stop = {
+        "hire",
+        "hiring",
+        "candidate",
+        "candidates",
+        "assessment",
+        "assessments",
+        "test",
+        "tests",
+        "role",
+        "roles",
+        "job",
+        "jobs",
+        "recruiter",
+        "interview",
+        "solution",
+        "solutions",
+        "pool",
+        "consists",
+        "people",
+        "years",
+        "experience",
+        "position",
+        "positions",
+        "of",
+        "than",
+        "more",
+        "less",
+        "against",
+        "comparing",
+        "compare",
+        "meant",
+        "intended",
+        "use",
         "for",
         "and",
         "with",
         "who",
+        "what",
         "can",
+        "should",
         "need",
+        "needs",
+        "needed",
+        "we",
+        "our",
+        "their",
         "looking",
         "prepare",
         "plan",
@@ -157,12 +207,24 @@ def _extract_positive_phrases(query: str, negatives: list[str]) -> list[str]:
         "a",
         "the",
         "to",
+        "not",
+        "no",
+        "without",
+        "exclude",
+        "avoid",
+        "yes",
+        "go",
+        "ahead",
+        "also",
+        "add",
+        "this",
+        "level",
     }
-    tokens = [
-        token
-        for token in re.findall(r"[A-Za-z][A-Za-z0-9+#.\-]{1,}", text)
-        if token.casefold() not in stop
-    ]
+    tokens = []
+    for token in re.findall(r"[A-Za-z][A-Za-z0-9+#.\-]{1,}", text):
+        cleaned = token.strip(" .;,")
+        if cleaned and cleaned.casefold() not in stop:
+            tokens.append(cleaned)
     phrases = [" ".join(tokens)] if tokens else []
     phrases.extend(tokens[:8])
     return _clean_list(phrases)
@@ -174,7 +236,7 @@ def _clean_list(values: object) -> list[str]:
     result: list[str] = []
     seen: set[str] = set()
     for value in values:
-        text = str(value).strip()
+        text = str(value).strip(" .;,")
         key = text.casefold()
         if text and key not in seen:
             seen.add(key)

@@ -18,7 +18,7 @@ class QueryGapAnalyzer:
         filtered: list[FilteredCandidate],
         strength: QueryStrengthReport,
     ) -> str:
-        fallback = self._fallback_question(strength)
+        fallback = self._fallback_question(state, strength)
         payload = {
             "state_terms": state.searchable_terms(),
             "shared_terms": strength.shared_terms,
@@ -33,15 +33,48 @@ class QueryGapAnalyzer:
             ],
         }
         system = (
-            "Generate one concise conversational clarification question to strengthen "
-            "a weak HR assessment search query. Ask about recurring semantic concepts "
-            "in the candidates. Do not offer a rigid menu. Return JSON: {question}."
+            "Generate one concise recruiter-facing clarification question. Sound like "
+            "an experienced assessment consultant narrowing hiring intent, not a search "
+            "system. Ask about role purpose, seniority, domain, specialization, work "
+            "context, or assessment use case. Do not mention retrieval, confidence, "
+            "keywords, semantic search, candidates, or database mechanics. Return JSON: "
+            "{question}."
         )
         parsed = self.llm.json_call(system, payload, {"question": fallback})
         return str(parsed.get("question", fallback)).strip() or fallback
 
-    def _fallback_question(self, strength: QueryStrengthReport) -> str:
-        terms = [term for term in strength.shared_terms[:3] if term]
-        if terms:
-            return f"Should the assessment focus on {', '.join(terms)}, or a different specialization?"
+    def _fallback_question(
+        self, state: ConversationState, strength: QueryStrengthReport
+    ) -> str:
+        state_terms = " ".join(state.searchable_terms()).casefold()
+        retrieved_terms = " ".join(strength.shared_terms).casefold()
+        terms = f"{state_terms} {retrieved_terms}"
+        if any(term in state_terms for term in ("leadership", "executive", "director", "manager")):
+            return (
+                "Is this intended for executive selection, promotion evaluation, "
+                "or leadership development?"
+            )
+        if any(
+            term in state_terms
+            for term in ("net", "java", "python", "developer", "engineer", "backend", "software")
+        ):
+            return (
+                "Would success in this role depend more on hands-on implementation, "
+                "systems design, or operational ownership?"
+            )
+        if any(term in state_terms for term in ("data", "analytics", "model", "machine", "ml")):
+            return (
+                "Should the candidate be assessed more for data analysis, predictive "
+                "modeling, or production ML delivery?"
+            )
+        if any(term in terms for term in ("net", "java", "python", "developer", "engineer", "backend")):
+            return (
+                "Would success in this role depend more on hands-on implementation, "
+                "systems design, or operational ownership?"
+            )
+        if any(term in terms for term in ("sales", "customer", "support", "service")):
+            return (
+                "Is the role more focused on customer-facing communication, sales "
+                "execution, or operational service delivery?"
+            )
         return "What core role, domain, or skill should the assessment focus on?"

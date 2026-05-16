@@ -110,6 +110,16 @@ class ConvergenceEngine:
                 trajectory=trajectory,
             )
 
+        if _has_stable_catalogue_family(state, filtered, confidence):
+            return ConvergenceStepResult(
+                status=StepStatus.CONVERGED,
+                message="Converged on a stable catalogue family.",
+                filtered_candidates=filtered,
+                confidence=confidence,
+                strength=strength,
+                trajectory=trajectory,
+            )
+
         if not strength.strong_enough:
             question = self.gap_analyzer.question(state, filtered, strength)
             state.ambiguity_history.append(question)
@@ -147,3 +157,60 @@ class ConvergenceEngine:
             ambiguity=ambiguity,
             trajectory=trajectory,
         )
+
+
+def _has_stable_catalogue_family(
+    state: ConversationState,
+    filtered: list[FilteredCandidate],
+    confidence: ConfidenceReport,
+) -> bool:
+    kept = [item.candidate for item in filtered if item.keep][:8]
+    if confidence.top_score < 0.70 or len(kept) < 2:
+        return False
+
+    terms = " ".join(state.searchable_terms()).casefold()
+    engineering_stack = (
+        state.turns >= 2
+        and "rust" in terms
+        and any(term in terms for term in ("networking", "infrastructure", "systems", "implementation"))
+        and _has_engineering_stack_matches(kept)
+    )
+    if engineering_stack:
+        return True
+
+    if state.turns < 3 or confidence.top_score < 0.78:
+        return False
+
+    has_clear_purpose = any(
+        term in terms
+        for term in (
+            "selection",
+            "benchmark",
+            "development",
+            "promotion",
+            "hiring",
+            "senior",
+            "executive",
+            "director",
+            "leadership",
+        )
+    )
+    if not has_clear_purpose:
+        return False
+
+    names = [item.entry.name.casefold() for item in kept]
+    categories = [" ".join(item.entry.keys).casefold() for item in kept]
+    opq_family = sum("opq" in name or "occupational personality" in name for name in names)
+    leadership_family = sum("leadership" in name for name in names)
+    category_counts = [categories.count(category) for category in set(categories) if category]
+    shared_category = max(category_counts) if category_counts else 0
+    return opq_family >= 2 or leadership_family >= 2 or shared_category >= 4
+
+
+def _has_engineering_stack_matches(kept: list[object]) -> bool:
+    names = " ".join(item.entry.name.casefold() for item in kept[:6])
+    signals = sum(
+        signal in names
+        for signal in ("smart interview", "linux programming", "networking and implementation")
+    )
+    return signals >= 2

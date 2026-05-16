@@ -9,9 +9,12 @@ This is not a generic chatbot. The runtime preserves a staged pipeline:
 3. Deterministic positive-intent retrieval with FAISS
 4. Conservative LLM filtering using negative constraints
 5. Query-strength analysis with score spread and entropy
-6. Query strengthening before ambiguity clarification
+6. Query strengthening before ambiguity clarification, rendered as recruiter-facing consultation
 7. Focused ambiguity clarification
-8. Catalogue-grounded assessment plan generation
+8. Catalogue-grounded recommendation and assessment plan generation
+
+The public interface does not expose orchestration states, confidence spread,
+entropy, retrieval ranks, or filtering diagnostics. Those remain backend-only.
 
 ## Architecture
 
@@ -24,7 +27,26 @@ This is not a generic chatbot. The runtime preserves a staged pipeline:
 - `app/reasoning/query_strength_engine.py` and `app/reasoning/query_gap_analyzer.py` detect weak queries and ask strengthening questions from shared top-k concepts.
 - `app/reasoning/analyze_candidates_enriched.py` compares high-ranking candidates and asks focused ambiguity questions.
 - `app/reasoning/convergence_engine.py` orchestrates the staged loop without collapsing it into one prompt.
+- `app/services/conversation_presenter.py` converts backend convergence results into natural recruiter-facing guidance and hides retrieval internals.
 - `app/services/assessment_agent.py` generates final assessment plans only from matched catalogue entries and preserved recruiter clarifications.
+
+## Conversation Contract
+
+Every `/chat` call advances the same loop: state update, deterministic retrieval,
+filtering, convergence evaluation, and either clarification or stable
+recommendation. The recruiter-facing response shape is intentionally small:
+
+```json
+{
+  "message": "I'm keeping the .NET backend focus and excluding MVC in view. Would success in this role depend more on hands-on implementation, systems design, or operational ownership?",
+  "recommendations": null,
+  "assessment_plan": null,
+  "end_of_conversation": false
+}
+```
+
+Recommendations only appear after convergence is stable enough for the assistant
+to be useful rather than noisy.
 
 ## Run
 

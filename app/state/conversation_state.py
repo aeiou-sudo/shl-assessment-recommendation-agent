@@ -47,6 +47,10 @@ class ConversationState:
     last_query_type: QueryType | None = None
     last_user_query: str = ""
     turns: int = 0
+    final_recommendations: list[dict[str, object]] = field(default_factory=list)
+    final_assessment_plan: dict[str, object] | None = None
+    final_message: str = ""
+    conversation_complete: bool = False
 
     def searchable_terms(self) -> list[str]:
         """Return positive intent terms only, excluding negative constraints."""

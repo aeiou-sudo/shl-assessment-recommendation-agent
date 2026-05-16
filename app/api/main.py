@@ -23,19 +23,13 @@ class ChatRequest(BaseModel):
 def chat(request: ChatRequest) -> dict[str, object]:
     state = sessions.setdefault(request.session_id, ConversationState())
     response = agent.handle(request.query, state)
-    return {
-        "status": response.status.value,
+    payload: dict[str, object] = {
         "message": response.message,
+        "recommendations": response.recommendations or None,
         "assessment_plan": response.assessment_plan,
-        "closest_matches": response.closest_matches,
-        "state": {
-            "domains": response.state.domains,
-            "skills": response.state.skills,
-            "specializations": response.state.specializations,
-            "negative_constraints": response.state.negative_constraints,
-            "turns": response.state.turns,
-        },
+        "end_of_conversation": response.end_of_conversation,
     }
+    return payload
 
 
 @app.get("/health")

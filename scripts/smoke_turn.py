@@ -18,10 +18,10 @@ def main() -> None:
     print(
         json.dumps(
             {
-                "status": response.status.value,
                 "message": response.message,
+                "recommendations": response.recommendations or None,
                 "assessment_plan": response.assessment_plan,
-                "closest_matches": response.closest_matches,
+                "end_of_conversation": response.end_of_conversation,
             },
             indent=2,
         )

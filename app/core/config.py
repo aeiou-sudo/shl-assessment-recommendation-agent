@@ -19,7 +19,7 @@ class Settings:
     )
     llm_model: str = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
     llm_temperature: float = 0.000001
-    default_top_k: int = 8
+    default_top_k: int = 12
     convergence_threshold: float = 0.72
     ambiguity_margin: float = 0.08
     weak_query_threshold: float = 0.45
